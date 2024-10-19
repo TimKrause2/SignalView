@@ -59,14 +59,25 @@ void Spectrum::GLDestroy(void)
     waterfall.reset(nullptr);
 }
 
-float window_func(float alpha)
+double window_func(double alpha)
 {
-    if(alpha>0.5f)
-        return 0.0f;
-    if(alpha<-0.5f)
-        return 0.0f;
-    return 0.53836f + 0.46164f*cos(2.0f*M_PI*alpha);
+    if(alpha>0.5)
+        return 0.0;
+    if(alpha<-0.5)
+        return 0.0;
+    return 0.53836 + 0.46164*cos(2.0*M_PI*(alpha-0.5));
 }
+
+double Blackman_Harris_window_func(double alpha)
+{
+    double a0 = 0.35875;
+    double a1 = 0.48829;
+    double a2 = 0.14128;
+    double a3 = 0.01168;
+    return a0 - a1*cos(2*M_PI*alpha) + a2*cos(4*M_PI*alpha)
+           - a3*cos(6*M_PI*alpha);
+}
+
 
 void Spectrum::Render(void)
 {
@@ -74,10 +85,8 @@ void Spectrum::Render(void)
     while(ptrFifo.GetNumReady()>0 && n!=0){
         double *x = ptrFifo.Pop();
         for(int i=0;i<Nfft;i++){
-            float alpha = (float)i/Nfft;
-            alpha -= 0.5;
-            //alpha *= Ncopy;
-            x_fft[i] = x[i];//*window_func(alpha);
+            double alpha = (double)i/Nfft;
+            x_fft[i] = x[i]*Blackman_Harris_window_func(alpha);
         }
         fftw_execute( x_plan );
         for(int i=0;i<Npoints;i++){

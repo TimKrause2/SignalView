@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="acf420" name="Spectrum" projectType="audioplug" useAppConfig="0"
+<JUCERPROJECT id="acf420" name="SignalView" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
               companyName="Timothy William Krause" pluginFormats="buildLV2,buildStandalone,buildVST3"
               pluginVST3Category="Analyzer" pluginVSTCategory="kPlugCategAnalysis"
-              lv2Uri="http://www.TimothyWilliamKrause.com/plugins/Spectrum">
-  <MAINGROUP id="Cmu3K9" name="Spectrum">
+              lv2Uri="http://www.TimothyWilliamKrause.com/plugins/SignalView"
+              pluginDesc="Osciliscope, spectrum and waterfall.">
+  <MAINGROUP id="Cmu3K9" name="SignalView">
     <GROUP id="{055940BC-A355-0765-1A1E-1DCC8CC6C90F}" name="Source">
       <FILE id="NlHZar" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
