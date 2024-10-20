@@ -164,8 +164,8 @@ void LGraph::Draw(float *y0)
 {
     if(ref_count==0)return;
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glBindBuffer(GL_ARRAY_BUFFER, yVBO);
 
@@ -183,10 +183,10 @@ void LGraph::Draw(float *y0)
 
     float top = ytop;
     float bottom = ybottom;
-    float left = -1.0;
-    float right = -1.0 + view_width*2.0f;
-    float near =  1.0;
-    float far = -1.0;
+    float left = -1.0f;
+    float right = -1.0f + view_width*2.0f;
+    float near =  1.0f;
+    float far = -1.0f;
     glm::mat4 projection = glm::ortho(left, right, bottom, top, near, far);
 
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));

@@ -21,20 +21,20 @@ struct PtrFifo
 {
 private:
     juce::AbstractFifo absFifo{ 16 };
-    double *buffer[16];
+    int buffer[16];
 public:
-    void Push(double *ptr)
+    void Push(int i)
     {
         const auto scope = absFifo.write(1);
         if(scope.blockSize1>0)
-            buffer[scope.startIndex1] = ptr;
+            buffer[scope.startIndex1] = i;
         else
             std::cout << "PtrFifo::Push buffer full" << std::endl;
     }
     
-    double *Pop(void)
+    int Pop(void)
     {
-        double *r;
+        int r;
         const auto scope = absFifo.read(1);
         if(scope.blockSize1>0)
             r = buffer[scope.startIndex1];
@@ -58,28 +58,43 @@ public:
     void GLInit(void);
     void GLDestroy(void);
     void Render(void);
-    void EvaluateSample(float x);
+    void EvaluateSample(float xl, float xr);
     void SetdBLimits(float dB_min, float dB_max);
     void SetWidth(float width);
+    void SetColors(float hue_left);
     
     
 private:
     int Nfft;
     int Npoints;
     int Ncopy;
-    int Nframe;
+    int index_last;
+    int i_buffer;
+    int i_sample;
+    int Ncount;
+    int count;
+    glm::vec4 color_l0;
+    glm::vec4 color_l1;
+    glm::vec4 color_r0;
+    glm::vec4 color_r1;
     double fsamplerate;
-    std::unique_ptr<int[]> index;
-    std::unique_ptr<std::unique_ptr<double[]>[]> x_in;
+    std::unique_ptr<float[]> x_cyclic_in_l;
+    std::unique_ptr<float[]> x_cyclic_in_r;
+    std::unique_ptr<std::unique_ptr<float[]>[]> x_in_l;
+    std::unique_ptr<std::unique_ptr<float[]>[]> x_in_r;
     std::unique_ptr<double[]> x_fft;
     bool dataReady;
     std::unique_ptr<std::complex<double>[]> X_fft;
     fftw_plan x_plan;
-    std::unique_ptr<float[]> X_db;
+    std::unique_ptr<float[]> X_db_l;
+    std::unique_ptr<float[]> X_db_r;
     PtrFifo ptrFifo;
     
     std::unique_ptr<LGraph> lgraph;
+    std::unique_ptr<LGraph> tgraph;
     std::unique_ptr<Waterfall> waterfall;
+    
+    void ComputeSpectrum(float *x, std::unique_ptr<float[]> &X_db);
 };
 
 

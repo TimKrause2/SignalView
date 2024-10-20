@@ -38,11 +38,12 @@ void Waterfall::InitQuads(void)
         "in vec2 tex;\n"
         "layout(location =0) out vec4 outColor;\n"
         "uniform sampler2D s_texture;\n"
-        "uniform sampler1D s_colormap;\n"
+        "uniform vec4 color_l;\n"
+        "uniform vec4 color_r;\n"
         "void main(void)\n"
         "{\n"
         "   vec4 t = texture(s_texture, tex);\n"
-        "   outColor = texture(s_colormap, t.r);\n"
+        "   outColor = vec4((color_l.rgb*t.r + color_r.rgb*t.g), 1.0);\n"
         "}\n";
 
     program = LoadProgram(vShaderSrc, fShaderSrc);
@@ -52,7 +53,8 @@ void Waterfall::InitQuads(void)
 
     mvp_loc = glGetUniformLocation(program, "mvp");
     s_texture_loc = glGetUniformLocation(program, "s_texture");
-    s_colormap_loc = glGetUniformLocation(program, "s_colormap");
+    color_l_loc = glGetUniformLocation(program, "color_l");
+    color_r_loc = glGetUniformLocation(program, "color_r");
 
     Attributes attributes1[4] =
         {
@@ -104,7 +106,7 @@ void Waterfall::InitQuads(void)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
     glTexStorage2D(GL_TEXTURE_2D, 1,
-                   GL_R8, Npoints, Nlines);
+                   GL_RG8, Npoints, Nlines);
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
@@ -113,29 +115,13 @@ void Waterfall::InitQuads(void)
 
     glBindTexture(GL_TEXTURE_2D, textures[1]);
     glTexStorage2D(GL_TEXTURE_2D, 1,
-                   GL_R8, Npoints, Nlines);
+                   GL_RG8, Npoints, Nlines);
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE );
 
-    glGenTextures(1, &colormap_tex);
-    glBindTexture(GL_TEXTURE_1D, colormap_tex);
-    glTexParameteri( GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-
-    #define N_COLORMAP 32
-    
-    Pixel cmap[N_COLORMAP];
-    for(int i=0;i<N_COLORMAP;i++){
-        float alpha = (float)i/(N_COLORMAP-1);
-        juce::Colour c = juce::Colour::fromHSV(0.0f, 0.0f, alpha, 1.0f);
-        cmap[i] = {c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()};
-    }
-    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, N_COLORMAP, 0, GL_RGBA, GL_UNSIGNED_BYTE, cmap);
-    
     quadsInitialized = true;
 
 }
@@ -164,7 +150,7 @@ Waterfall::Waterfall(int Npoints, int Nlines) :
     view_height = 1.0;
     dB_min = -180.0;
     dB_max = 0.0;
-    pixels.reset(new unsigned char[Npoints]);
+    pixels.reset(new wPixel[Npoints]);
 }
 
 Waterfall::~Waterfall()
@@ -188,7 +174,22 @@ void Waterfall::SetdBLimits(float dB_min, float dB_max)
     Waterfall::dB_max = dB_max;
 }
 
-void Waterfall::InsertLine(float *data)
+unsigned char Waterfall::dB2intensity(float dB_x)
+{
+    float intensity;
+    if(dB_x >= dB_max){
+        intensity = 1.0f;
+    }else if(dB_x <= dB_min){
+        intensity = 0.0f;
+    }else{
+        intensity = (dB_x - dB_min)/(dB_max - dB_min);
+    }
+    unsigned char c = intensity*255.0f;
+    return c;
+}
+    
+
+void Waterfall::InsertLine(float *data_l, float *data_r)
 {
     if(!quadsInitialized) return;
     if(line==Nlines){
@@ -204,25 +205,16 @@ void Waterfall::InsertLine(float *data)
         }
     }
     for(int i=0;i<Npoints;i++){
-        float dB_x = data[i];
-        float intensity;
-        if(dB_x >= dB_max){
-            intensity = 1.0f;
-        }else if(dB_x <= dB_min){
-            intensity = 0.0f;
-        }else{
-            intensity = (dB_x - dB_min)/(dB_max - dB_min);
-        }
-        unsigned char c = intensity*255.0f;
-        pixels[i] = c;
+        pixels[i].r = dB2intensity(data_l[i]);
+        pixels[i].g = dB2intensity(data_r[i]);
     }
     glBindTexture(GL_TEXTURE_2D, current_tex);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, Nlines-line-1, Npoints, 1, GL_RED, GL_UNSIGNED_BYTE, pixels.get());
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, Nlines-line-1, Npoints, 1, GL_RG, GL_UNSIGNED_BYTE, pixels.get());
     line++;
 }
         
 
-void Waterfall::Render(void)
+void Waterfall::Render(glm::vec4 &color_l, glm::vec4 &color_r)
 {
     if(!quadsInitialized) return;
     float top = 0.0;
@@ -236,10 +228,9 @@ void Waterfall::Render(void)
     glm::mat4 M_mvp = M_proj*M_trans;
     glUseProgram(program);
     glUniform1i(s_texture_loc, 0);
-    glUniform1i(s_colormap_loc, 1);
     glUniformMatrix4fv(mvp_loc, 1, GL_FALSE, glm::value_ptr(M_mvp));
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_1D, colormap_tex);
+    glUniform4fv(color_l_loc, 1, glm::value_ptr(color_l));
+    glUniform4fv(color_r_loc, 1, glm::value_ptr(color_r));
  
     glActiveTexture(GL_TEXTURE0);
     

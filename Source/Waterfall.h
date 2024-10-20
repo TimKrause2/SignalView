@@ -15,6 +15,14 @@
 
 using namespace juce::gl;
 
+struct wPixel
+{
+    unsigned char r;
+    unsigned char g;
+};
+
+
+
 class Waterfall
 {
 private:
@@ -27,20 +35,21 @@ private:
     float view_height;
     float dB_min;
     float dB_max;
-    std::unique_ptr<unsigned char[]> pixels;
+    std::unique_ptr<wPixel[]> pixels;
     GLuint textures[2];
     GLuint current_tex;
     GLuint trailing_tex;
-    GLuint colormap_tex;
     GLuint vbos[2];
     GLuint vaos[2];
     GLuint program;
     GLint mvp_loc;
     GLint s_texture_loc;
-    GLint s_colormap_loc;
+    GLint color_l_loc;
+    GLint color_r_loc;
     
     void InitQuads(void);
     void DeleteQuads(void);
+    unsigned char dB2intensity(float dB);
 public:
     Waterfall(int Npoints, int Nlines);
     ~Waterfall();
@@ -48,8 +57,8 @@ public:
     void SetViewWidth(float width);
     void SetViewHeight(float height);
     void SetdBLimits(float dB_min, float dB_max);
-    void InsertLine(float *data);
-    void Render(void);
+    void InsertLine(float *data_l, float *data_r);
+    void Render(glm::vec4 &color_l, glm::vec4 &color_r);
 };
 
 struct Attributes

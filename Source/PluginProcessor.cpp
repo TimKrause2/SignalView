@@ -151,22 +151,11 @@ void SpectrumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    auto* channelData_l = buffer.getWritePointer (0);
+    auto* channelData_r = buffer.getWritePointer (1);
+    for(int i = 0; i < buffer.getNumSamples(); i++)
     {
-        auto* channelData = buffer.getWritePointer (channel);
-        if(channel==0){
-            for(int i = 0; i < buffer.getNumSamples(); i++)
-                spectrum->EvaluateSample(channelData[i]);
-        }
-        //for(int i = 0; i < buffer.getNumSamples(); i++)
-        //    channelData[i] = 0.0f;
-        
+        spectrum->EvaluateSample(channelData_l[i], channelData_r[i]);
     }
 }
 
