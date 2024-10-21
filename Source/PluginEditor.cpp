@@ -15,7 +15,7 @@ SpectrumAudioProcessorEditor::SpectrumAudioProcessorEditor (SpectrumAudioProcess
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    setSize (800, 800);
     setResizable(true, true);
     
     addAndMakeVisible(image);
@@ -28,6 +28,8 @@ SpectrumAudioProcessorEditor::SpectrumAudioProcessorEditor (SpectrumAudioProcess
     rangeSlider.setSliderStyle(juce::Slider::TwoValueVertical);
     rangeSlider.setRange(-180.0, 0.0);
     rangeSlider.setMinAndMaxValues(-180.0, 0.0);
+    rangeSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 15, 15);
+    rangeSlider.setPopupDisplayEnabled(true, true, this);
     addAndMakeVisible(rangeSlider);
     
     addAndMakeVisible(widthSlider);

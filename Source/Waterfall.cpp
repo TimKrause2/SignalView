@@ -43,7 +43,7 @@ void Waterfall::InitQuads(void)
         "void main(void)\n"
         "{\n"
         "   vec4 t = texture(s_texture, tex);\n"
-        "   outColor = vec4((color_l.rgb*t.r + color_r.rgb*t.g), 1.0);\n"
+        "   outColor = vec4((color_l.rgb*t.r*t.r + color_r.rgb*t.g*t.g), 1.0);\n"
         "}\n";
 
     program = LoadProgram(vShaderSrc, fShaderSrc);

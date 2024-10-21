@@ -73,6 +73,8 @@ private:
     int i_sample;
     int Ncount;
     int count;
+    int i_draw_front;
+    int i_draw_back;
     glm::vec4 color_l0;
     glm::vec4 color_l1;
     glm::vec4 color_r0;
@@ -80,6 +82,8 @@ private:
     double fsamplerate;
     std::unique_ptr<float[]> x_cyclic_in_l;
     std::unique_ptr<float[]> x_cyclic_in_r;
+    std::unique_ptr<std::unique_ptr<float[]>[]> x_draw_l;
+    std::unique_ptr<std::unique_ptr<float[]>[]> x_draw_r;
     std::unique_ptr<std::unique_ptr<float[]>[]> x_in_l;
     std::unique_ptr<std::unique_ptr<float[]>[]> x_in_r;
     std::unique_ptr<double[]> x_fft;

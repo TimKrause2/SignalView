@@ -32,6 +32,12 @@ Spectrum::Spectrum(int Nfft, double fsamplerate, int Ncopy):
     dataReady = false;
     x_cyclic_in_l.reset(new float[Nfft]);
     x_cyclic_in_r.reset(new float[Nfft]);
+    x_draw_l.reset(new std::unique_ptr<float[]>[2]);
+    x_draw_r.reset(new std::unique_ptr<float[]>[2]);
+    x_draw_l[0].reset(new float[Nfft]);
+    x_draw_l[1].reset(new float[Nfft]);
+    x_draw_r[0].reset(new float[Nfft]);
+    x_draw_r[1].reset(new float[Nfft]);
     x_in_l.reset(new std::unique_ptr<float[]>[Ncopy]);
     x_in_r.reset(new std::unique_ptr<float[]>[Ncopy]);
     for(int c=0;c<Ncopy;c++){
@@ -44,6 +50,8 @@ Spectrum::Spectrum(int Nfft, double fsamplerate, int Ncopy):
     i_sample = 0;
     Ncount = Nfft/Ncopy;
     count = Ncount;
+    i_draw_front = 0;
+    i_draw_back = 1;
 }
     
 Spectrum::~Spectrum()
@@ -96,8 +104,9 @@ void Spectrum::ComputeSpectrum(float *x, std::unique_ptr<float[]> &X_db)
         x_fft[i] = x[i]*Blackman_Harris_window_func(alpha);
     }
     fftw_execute( x_plan );
+    float norm_fact = 2.0f/Nfft/0.3587500f;
     for(int i=0;i<Npoints;i++){
-        float abs_X = (float)abs(X_fft[i])/Nfft;
+        float abs_X = (float)abs(X_fft[i])*norm_fact;
         //if(i) abs_X*=(float)i*100.0f/Npoints;
         if(abs_X < 1e-9) abs_X = 1e-9;
         X_db[i] = 20.0f * log10f(abs_X);
@@ -130,9 +139,9 @@ void Spectrum::Render(void)
 
     glViewport(0, 2*viewport[3]/3, viewport[2], viewport[3]/3);
     tgraph->SetColors(color_l0, color_l1);
-    tgraph->Draw(x_in_l[index_last].get());
+    tgraph->Draw(x_draw_l[i_draw_front].get());
     tgraph->SetColors(color_r0, color_r1);
-    tgraph->Draw(x_in_r[index_last].get());
+    tgraph->Draw(x_draw_r[i_draw_front].get());
     
     glViewport(0, viewport[3]/3, viewport[2], viewport[3]/3);
     lgraph->SetColors(color_l0, color_l1);
@@ -181,6 +190,10 @@ void Spectrum::EvaluateSample(float x_l, float x_r)
         for(int i=0;i<N1;i++){
             x_in_l[i_buffer][i_dst] = x_cyclic_in_l[i_src];
             x_in_r[i_buffer][i_dst] = x_cyclic_in_r[i_src];
+            if(i_buffer==0){
+                x_draw_l[i_draw_back][i_dst] = x_cyclic_in_l[i_src];
+                x_draw_r[i_draw_back][i_dst] = x_cyclic_in_r[i_src];
+            }
             i_src++;
             i_dst++;
         }
@@ -188,8 +201,16 @@ void Spectrum::EvaluateSample(float x_l, float x_r)
         for(int i=0;i<N2;i++){
             x_in_l[i_buffer][i_dst] = x_cyclic_in_l[i_src];
             x_in_r[i_buffer][i_dst] = x_cyclic_in_r[i_src];
+            if(i_buffer==0){
+                x_draw_l[i_draw_back][i_dst] = x_cyclic_in_l[i_src];
+                x_draw_r[i_draw_back][i_dst] = x_cyclic_in_r[i_src];
+            }
             i_src++;
             i_dst++;
+        }
+        if(i_buffer==0){
+            i_draw_front ^= 1;
+            i_draw_back ^= 1;
         }
         ptrFifo.Push(i_buffer);
         i_buffer++;
