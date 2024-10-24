@@ -39,7 +39,9 @@ private:
     GLuint textures[2];
     GLuint current_tex;
     GLuint trailing_tex;
-    GLuint vbos[2];
+    GLuint x_vbo;
+    GLuint tex_vbo;
+    GLuint y_vbos[2];
     GLuint vaos[2];
     GLuint program;
     GLint mvp_loc;
@@ -50,10 +52,12 @@ private:
     void InitQuads(void);
     void DeleteQuads(void);
     unsigned char dB2intensity(float dB);
+    void InitializeBuffers(void);
 public:
     Waterfall(int Npoints, int Nlines);
     ~Waterfall();
     
+    void InitializeFrequency(bool log=false);
     void SetViewWidth(float width);
     void SetViewHeight(float height);
     void SetdBLimits(float dB_min, float dB_max);

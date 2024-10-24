@@ -16,6 +16,7 @@
 #include <iostream>
 #include "LGraph.h"
 #include "Waterfall.h"
+#include "Grid.h"
 
 struct PtrFifo
 {
@@ -28,8 +29,8 @@ public:
         const auto scope = absFifo.write(1);
         if(scope.blockSize1>0)
             buffer[scope.startIndex1] = i;
-        else
-            std::cout << "PtrFifo::Push buffer full" << std::endl;
+        //else
+        //    std::cout << "PtrFifo::Push buffer full" << std::endl;
     }
     
     int Pop(void)
@@ -38,8 +39,8 @@ public:
         const auto scope = absFifo.read(1);
         if(scope.blockSize1>0)
             r = buffer[scope.startIndex1];
-        else
-            std::cout << "PtrFifo::Pop buffer empty" << std::endl;
+        //else
+        //    std::cout << "PtrFifo::Pop buffer empty" << std::endl;
         return r;
     }
 
@@ -62,7 +63,7 @@ public:
     void SetdBLimits(float dB_min, float dB_max);
     void SetWidth(float width);
     void SetColors(float hue_left);
-    
+    void SetFrequency(bool log=false);
     
 private:
     int Nfft;
@@ -97,6 +98,7 @@ private:
     std::unique_ptr<LGraph> lgraph;
     std::unique_ptr<LGraph> tgraph;
     std::unique_ptr<Waterfall> waterfall;
+    std::unique_ptr<Grid> grid;
     
     void ComputeSpectrum(float *x, std::unique_ptr<float[]> &X_db);
 };

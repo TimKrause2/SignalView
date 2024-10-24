@@ -15,15 +15,22 @@
       <FILE id="DnlhNZ" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="Va5VYR" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="kyeWGZ" name="LGraph.cpp" compile="1" resource="0" file="Source/LGraph.cpp"/>
+      <FILE id="GbC9Im" name="LGraph.h" compile="0" resource="0" file="Source/LGraph.h"/>
+      <FILE id="ONvjIB" name="Shader.cpp" compile="1" resource="0" file="Source/Shader.cpp"/>
+      <FILE id="p6jVEl" name="Spectrum.cpp" compile="1" resource="0" file="Source/Spectrum.cpp"/>
+      <FILE id="lVMJje" name="Spectrum.h" compile="0" resource="0" file="Source/Spectrum.h"/>
+      <FILE id="AEKbTc" name="Shader.h" compile="0" resource="0" file="Source/Shader.h"/>
+      <FILE id="ROLKJT" name="Waterfall.cpp" compile="1" resource="0" file="Source/Waterfall.cpp"/>
+      <FILE id="kpPMHr" name="Waterfall.h" compile="0" resource="0" file="Source/Waterfall.h"/>
+      <FILE id="MvlVUc" name="Font.cpp" compile="1" resource="0" file="Source/Font.cpp"/>
+      <FILE id="nZWGxD" name="Font.h" compile="0" resource="0" file="Source/Font.h"/>
+      <FILE id="ndOJoq" name="fontbase.h" compile="0" resource="0" file="Source/fontbase.h"/>
+      <FILE id="ZXH3Qz" name="Grid.cpp" compile="1" resource="0" file="Source/Grid.cpp"/>
+      <FILE id="Mspoh5" name="Grid.h" compile="0" resource="0" file="Source/Grid.h"/>
+      <FILE id="nkww9g" name="sui generis rg.otf" compile="0" resource="1"
+            file="Source/sui generis rg.otf"/>
     </GROUP>
-    <FILE id="kyeWGZ" name="LGraph.cpp" compile="1" resource="0" file="Source/LGraph.cpp"/>
-    <FILE id="GbC9Im" name="LGraph.h" compile="0" resource="0" file="Source/LGraph.h"/>
-    <FILE id="ONvjIB" name="Shader.cpp" compile="1" resource="0" file="Source/Shader.cpp"/>
-    <FILE id="AEKbTc" name="Shader.h" compile="0" resource="0" file="Source/Shader.h"/>
-    <FILE id="p6jVEl" name="Spectrum.cpp" compile="1" resource="0" file="Source/Spectrum.cpp"/>
-    <FILE id="lVMJje" name="Spectrum.h" compile="0" resource="0" file="Source/Spectrum.h"/>
-    <FILE id="ROLKJT" name="Waterfall.cpp" compile="1" resource="0" file="Source/Waterfall.cpp"/>
-    <FILE id="kpPMHr" name="Waterfall.h" compile="0" resource="0" file="Source/Waterfall.h"/>
   </MAINGROUP>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

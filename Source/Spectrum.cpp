@@ -69,6 +69,10 @@ void Spectrum::GLInit(void)
     lgraph->SetLimits(0.0f, -180.0f);
     
     waterfall.reset(new Waterfall(Npoints, 128));
+
+    grid.reset(new Grid(Nfft, fsamplerate));
+
+    SetFrequency(true);
 }
 
 void Spectrum::GLDestroy(void)
@@ -76,6 +80,7 @@ void Spectrum::GLDestroy(void)
     lgraph.reset(nullptr);
     tgraph.reset(nullptr);
     waterfall.reset(nullptr);
+    grid.reset(nullptr);
 }
 
 double window_func(double alpha)
@@ -104,7 +109,7 @@ void Spectrum::ComputeSpectrum(float *x, std::unique_ptr<float[]> &X_db)
         x_fft[i] = x[i]*Blackman_Harris_window_func(alpha);
     }
     fftw_execute( x_plan );
-    float norm_fact = 2.0f/Nfft/0.3587500f;
+    float norm_fact = 2.0f/0.3587500f/Nfft;
     for(int i=0;i<Npoints;i++){
         float abs_X = (float)abs(X_fft[i])*norm_fact;
         //if(i) abs_X*=(float)i*100.0f/Npoints;
@@ -144,6 +149,7 @@ void Spectrum::Render(void)
     tgraph->Draw(x_draw_r[i_draw_front].get());
     
     glViewport(0, viewport[3]/3, viewport[2], viewport[3]/3);
+    grid->Draw();
     lgraph->SetColors(color_l0, color_l1);
     lgraph->Draw(X_db_l.get());
     lgraph->SetColors(color_r0, color_r1);
@@ -163,6 +169,8 @@ void Spectrum::SetdBLimits(float dB_min, float dB_max)
         lgraph->SetLimits(dB_max, dB_min);
     if(waterfall)
         waterfall->SetdBLimits(dB_min, dB_max);
+    if(grid)
+        grid->SetLimits(dB_max, dB_min);
 }
 
 void Spectrum::SetWidth(float width)
@@ -171,6 +179,8 @@ void Spectrum::SetWidth(float width)
         lgraph->SetViewWidth(width);
     if(waterfall)
         waterfall->SetViewWidth(width);
+    if(grid)
+        grid->SetViewWidth(width);
 }
 
 void Spectrum::EvaluateSample(float x_l, float x_r)
@@ -238,3 +248,29 @@ void Spectrum::SetColors(float hue_l)
     color_r1 = glm::vec4(rgb_r1, 1.0f);
 }
 
+void Spectrum::SetFrequency(bool log)
+{
+    std::unique_ptr<float[]> x;
+    x.reset(new float[Npoints]);
+
+    if(!log){
+        for(int i=0;i<Npoints;i++){
+            float alpha = (float)i/(Npoints-1);
+            x[i] = -1.0f + alpha*2.0f;
+        }
+    }else{
+        x[0] = -1.0f;
+        float alpha2 = logf(2.0f)/logf((float)Npoints);
+        float beta = alpha2/(1.0f + alpha2);
+        float one_m_beta = 1.0f - beta;
+
+        for(int i=1;i<Npoints;i++){
+            float alpha = logf((float)i) / logf((float)Npoints);
+            float f = beta + alpha*one_m_beta;
+            x[i] = -1.0f + f*2.0f;
+        }
+    }
+    lgraph->SetX(x.get());
+    waterfall->InitializeFrequency(log);
+    grid->SetFrequency(log);
+}
