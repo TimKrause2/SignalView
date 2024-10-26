@@ -79,7 +79,7 @@ LGraph::LGraph(int Nvertices)
 
     glBindBuffer(GL_ARRAY_BUFFER, xVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*Nvertices,
-                 NULL, GL_STATIC_DRAW);
+                 NULL, GL_DYNAMIC_DRAW);
 
     float *xVBOmap = (float*)glMapBufferRange(GL_ARRAY_BUFFER,
                                               0, sizeof(float)*Nvertices,

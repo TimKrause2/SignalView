@@ -85,10 +85,4 @@ struct Span
 
 typedef std::vector<Span> Spans;
 
-struct Attributes
-{
-    glm::vec2 vertex;
-    glm::vec2 texel;
-};
-
 #endif

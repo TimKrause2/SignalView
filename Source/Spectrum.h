@@ -61,7 +61,7 @@ public:
     void Render(void);
     void EvaluateSample(float xl, float xr);
     void SetdBLimits(float dB_min, float dB_max);
-    void SetWidth(float width);
+    void SetWidth(float frequency);
     void SetColors(float hue_left);
     void SetFrequency(bool log=false);
     
@@ -76,6 +76,8 @@ private:
     int count;
     int i_draw_front;
     int i_draw_back;
+    bool log;
+    bool log_last;
     glm::vec4 color_l0;
     glm::vec4 color_l1;
     glm::vec4 color_r0;
@@ -101,6 +103,7 @@ private:
     std::unique_ptr<Grid> grid;
     
     void ComputeSpectrum(float *x, std::unique_ptr<float[]> &X_db);
+    void InitializeFrequency(void);
 };
 
 

@@ -52,6 +52,8 @@ Spectrum::Spectrum(int Nfft, double fsamplerate, int Ncopy):
     count = Ncount;
     i_draw_front = 0;
     i_draw_back = 1;
+    log = false;
+    log_last = false;
 }
     
 Spectrum::~Spectrum()
@@ -71,8 +73,6 @@ void Spectrum::GLInit(void)
     waterfall.reset(new Waterfall(Npoints, 128));
 
     grid.reset(new Grid(Nfft, fsamplerate));
-
-    SetFrequency(true);
 }
 
 void Spectrum::GLDestroy(void)
@@ -120,6 +120,11 @@ void Spectrum::ComputeSpectrum(float *x, std::unique_ptr<float[]> &X_db)
 
 void Spectrum::Render(void)
 {
+    if(log!=log_last){
+        InitializeFrequency();
+        log_last = log;
+    }
+
     int n = Ncopy;
     float *x_l=nullptr;
     float *x_r=nullptr;
@@ -173,8 +178,9 @@ void Spectrum::SetdBLimits(float dB_min, float dB_max)
         grid->SetLimits(dB_max, dB_min);
 }
 
-void Spectrum::SetWidth(float width)
+void Spectrum::SetWidth(float frequency)
 {
+    float width = frequency/(fsamplerate/2.0);
     if(lgraph)
         lgraph->SetViewWidth(width);
     if(waterfall)
@@ -249,6 +255,11 @@ void Spectrum::SetColors(float hue_l)
 }
 
 void Spectrum::SetFrequency(bool log)
+{
+    Spectrum::log = log;
+}
+
+void Spectrum::InitializeFrequency(void)
 {
     std::unique_ptr<float[]> x;
     x.reset(new float[Npoints]);

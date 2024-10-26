@@ -31,6 +31,12 @@ void FreeTypeFont::Free( void )
     loaded = false;
 }
 
+struct Attributes
+{
+    glm::vec2 vertex;
+    glm::vec2 texel;
+};
+
 #define VERTEX_LOC 0
 #define TEXEL_LOC  1
 
@@ -119,9 +125,6 @@ void FreeTypeFont::Printf( double x, double y, const char *format, ... )
     float farVal = -1.0;
     glm::mat4 Mprojection = glm::ortho(left, right, bottom, top, nearVal, farVal);
 
-    glEnable( GL_BLEND );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
     glm::vec3 vBaseLine(x, y-descender, 0.0);
 
     glUseProgram(program);
@@ -146,7 +149,6 @@ void FreeTypeFont::Printf( double x, double y, const char *format, ... )
 
     glUseProgram(0);
     glBindVertexArray(0);
-    glDisable( GL_BLEND );
 }
 
 float FreeTypeFont::PrintfAdvance(const char *format, ... )

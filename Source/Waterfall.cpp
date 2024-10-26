@@ -81,7 +81,7 @@ void Waterfall::InitQuads(void)
     glGenVertexArrays(2, vaos);
 
     InitializeBuffers();
-    InitializeFrequency(true);
+    InitializeFrequency();
     
     //
     // the vertex array object for the upper quad
@@ -215,7 +215,7 @@ void Waterfall::InitializeFrequency(bool log)
 {
     glBindBuffer(GL_ARRAY_BUFFER, x_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*Npoints*2,
-                 NULL, GL_STATIC_DRAW);
+                 NULL, GL_DYNAMIC_DRAW);
     float *xmap = (float*)glMapBufferRange(GL_ARRAY_BUFFER,
                                            0, sizeof(float)*Npoints*2,
                                            GL_MAP_WRITE_BIT|

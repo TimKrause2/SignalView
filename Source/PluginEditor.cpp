@@ -11,7 +11,8 @@
 
 //==============================================================================
 SpectrumAudioProcessorEditor::SpectrumAudioProcessorEditor (SpectrumAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), audioProcessor (p),
+    logButton("Log")
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
@@ -26,7 +27,7 @@ SpectrumAudioProcessorEditor::SpectrumAudioProcessorEditor (SpectrumAudioProcess
     
     rangeSlider.addListener(this);
     rangeSlider.setSliderStyle(juce::Slider::TwoValueVertical);
-    rangeSlider.setRange(-180.0, 0.0);
+    rangeSlider.setRange(-180.0, 0.0, 3.0);
     rangeSlider.setMinAndMaxValues(-180.0, 0.0);
     rangeSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 15, 15);
     rangeSlider.setPopupDisplayEnabled(true, true, this);
@@ -34,10 +35,14 @@ SpectrumAudioProcessorEditor::SpectrumAudioProcessorEditor (SpectrumAudioProcess
     
     addAndMakeVisible(widthSlider);
     widthSlider.setSliderStyle(juce::Slider::LinearHorizontal);
-    widthSlider.setRange(0.1, 1.0);
-    widthSlider.setValue(1.0);
+    float nyquistRate = p.getSampleRate()/2.0;
+    widthSlider.setRange(1000.0, nyquistRate);
+    widthSlider.setValue(nyquistRate);
+    widthSlider.setNumDecimalPlacesToDisplay(0);
     widthSlider.addListener(this);
 
+    addAndMakeVisible(logButton);
+    logButton.addListener(this);
 }
 
 SpectrumAudioProcessorEditor::~SpectrumAudioProcessorEditor()
@@ -58,9 +63,11 @@ void SpectrumAudioProcessorEditor::paint (juce::Graphics& g)
 void SpectrumAudioProcessorEditor::resized()
 {
     auto area = getLocalBounds();
-    auto widthSliderHeight = 50;
-    widthSlider.setBounds(area.removeFromBottom(widthSliderHeight));
-    auto sliderWidth = 50;
+    auto widthSliderHeight = 35;
+    auto bottom = area.removeFromBottom(widthSliderHeight);
+    logButton.setBounds(bottom.removeFromLeft(80));
+    widthSlider.setBounds(bottom);
+    auto sliderWidth = 40;
     rangeSlider.setBounds(area.removeFromRight(sliderWidth));
     image.setBounds(area);
 }
@@ -73,11 +80,28 @@ void SpectrumAudioProcessorEditor::sliderValueChanged(juce::Slider *slider)
         if(audioProcessor.spectrum)
             audioProcessor.spectrum->SetdBLimits(dB_min, dB_max);
     }else if(slider == &widthSlider){
-        float width = widthSlider.getValue();
+        float frequency = widthSlider.getValue();
         if(audioProcessor.spectrum)
-            audioProcessor.spectrum->SetWidth(width);
+            audioProcessor.spectrum->SetWidth(frequency);
     }
 }
+
+void SpectrumAudioProcessorEditor::buttonClicked(juce::Button *button)
+{
+    if(button == &logButton){
+        bool log = logButton.getToggleState();
+        audioProcessor.spectrum->SetFrequency(log);
+        if(log){
+            widthSlider.setVisible(false);
+            audioProcessor.spectrum->SetWidth(audioProcessor.getSampleRate()/2.0);
+        }else{
+            widthSlider.setVisible(true);
+            float frequency = widthSlider.getValue();
+            audioProcessor.spectrum->SetWidth(frequency);
+        }
+    }
+}
+
 
 
 TestRenderer::TestRenderer(SpectrumAudioProcessorEditor &editor):
@@ -85,8 +109,31 @@ TestRenderer::TestRenderer(SpectrumAudioProcessorEditor &editor):
 {
 }
 
+#ifdef DEBUG
+#include <stdio.h>
+
+void MessageCallback( GLenum source,
+                GLenum type,
+                GLuint id,
+                GLenum severity,
+                GLsizei length,
+                const GLchar* message,
+                const void* userParam )
+{
+    fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+            ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
+            type, severity, message );
+}
+
+#endif
+
+
 void TestRenderer::newOpenGLContextCreated()
 {
+#ifdef DEBUG
+    glEnable              ( GL_DEBUG_OUTPUT );
+    glDebugMessageCallback( MessageCallback, 0 );
+#endif
     editor.audioProcessor.spectrum->GLInit();
 }
 

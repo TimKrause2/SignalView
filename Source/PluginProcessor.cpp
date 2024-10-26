@@ -97,9 +97,9 @@ void SpectrumAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    std::cout << "prepareToPlay  sampleRate:" << sampleRate << " samplesPerBlock:" 
-    << samplesPerBlock << std::endl;
-    int Nfft = 1<<12;
+    int Nfft = (int)sampleRate/10;
+    if(Nfft&1)
+        Nfft++;
     spectrum.reset(new Spectrum(Nfft, sampleRate, 2));
 }
 
