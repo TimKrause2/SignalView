@@ -297,7 +297,15 @@ float Grid::y_dBDisplacement(float dB)
     return (dB-dB_bottom)/(dB_top-dB_bottom);
 }
 
-void Grid::Draw_dB(void)
+void Grid::Draw_dBText(float dB, int view_height)
+{
+    float y = y_dBDisplacement(dB);
+    double ys = y*view_height + 2.0;
+    double xs = 2.0;
+    dB_font.Printf(xs, ys, "%.0f", dB);
+}
+
+void Grid::Draw_dB(int view_height)
 {
     float delta_dB = dB_top - dB_bottom;
     if(delta_dB==0.0f)
@@ -337,14 +345,21 @@ void Grid::Draw_dB(void)
     glUniform4fv(color_loc, 1, glm::value_ptr(dB_color));
     glLineWidth(1.0f);
     glDrawArrays(GL_LINES, (group_offset+i0)*2, Nlines*2);
+
+    for(int d=i0;d<=i1;d++)
+        Draw_dBText(-d*dB_per_line, view_height);
 }
 
 void Grid::Draw(void)
 {
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+
     glUseProgram(program);
 
-    Draw_dB();
+    Draw_dB(viewport[3]);
 
+    glUseProgram(program);
     if(log){
         float top = 1.0f;
         float bottom = 0.0f;
@@ -363,9 +378,6 @@ void Grid::Draw(void)
         glDrawArrays(GL_LINES, N_LOG_BORDER*2, N_LOG_DECADE*2);
         glUniform4fv(color_loc, 1, glm::value_ptr(log_linear_color));
         glDrawArrays(GL_LINES, (N_LOG_BORDER+N_LOG_DECADE)*2, N_LOG_LINEAR*2);
-
-        GLint viewport[4];
-        glGetIntegerv(GL_VIEWPORT, viewport);
 
         DrawLogFrequencyText(10.0f, "10", viewport[2], viewport[3]);
         DrawLogFrequencyText(100.0f, "100", viewport[2], viewport[3]);

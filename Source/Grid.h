@@ -83,7 +83,10 @@ class Grid
                               int view_width, int view_height);
 
     float y_dBDisplacement(float dB);
-    void Draw_dB(void);
+
+    void Draw_dBText(float dB, int view_height);
+
+    void Draw_dB(int view_height);
 
 public:
     Grid(int Nfft, float sample_rate);

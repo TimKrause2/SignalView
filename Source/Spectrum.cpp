@@ -148,22 +148,22 @@ void Spectrum::Render(void)
     glClear(GL_COLOR_BUFFER_BIT);
 
     glViewport(0, 2*viewport[3]/3, viewport[2], viewport[3]/3);
-    tgraph->SetColors(color_l0, color_l1);
+    tgraph->SetColors(time_color_l0, time_color_l1);
     tgraph->Draw(x_draw_l[i_draw_front].get());
-    tgraph->SetColors(color_r0, color_r1);
+    tgraph->SetColors(time_color_r0, time_color_r1);
     tgraph->Draw(x_draw_r[i_draw_front].get());
     
     glViewport(0, viewport[3]/3, viewport[2], viewport[3]/3);
     grid->Draw();
-    lgraph->SetColors(color_l0, color_l1);
+    lgraph->SetColors(freq_color_l0, freq_color_l1);
     lgraph->Draw(X_db_l.get());
-    lgraph->SetColors(color_r0, color_r1);
+    lgraph->SetColors(freq_color_r0, freq_color_r1);
     lgraph->Draw(X_db_r.get());
     
     glDisable(GL_BLEND);
     
     glViewport(0, 0, viewport[2], viewport[3]/3);
-    waterfall->Render(color_l1, color_r1);
+    waterfall->Render(time_color_l1, time_color_r1);
     //std::cout << ".";
     //std::cout.flush();
 }
@@ -240,18 +240,30 @@ void Spectrum::SetColors(float hue_l)
     float hue_r = hue_l + 180.0f;
     if(hue_r>=360.0f)
         hue_r -= 360.0f;
-    glm::vec3 hsv_l0(hue_l, 1.0f, 0.125f);
-    glm::vec3 hsv_l1(hue_l, 1.0f, 1.0f);
-    glm::vec3 hsv_r0(hue_r, 1.0f, 0.125f);
-    glm::vec3 hsv_r1(hue_r, 1.0f, 1.0f);
-    glm::vec3 rgb_l0 = glm::rgbColor(hsv_l0);
-    glm::vec3 rgb_l1 = glm::rgbColor(hsv_l1);
-    glm::vec3 rgb_r0 = glm::rgbColor(hsv_r0);
-    glm::vec3 rgb_r1 = glm::rgbColor(hsv_r1);
-    color_l0 = glm::vec4(rgb_l0, 1.0f);
-    color_l1 = glm::vec4(rgb_l1, 1.0f);
-    color_r0 = glm::vec4(rgb_r0, 1.0f);
-    color_r1 = glm::vec4(rgb_r1, 1.0f);
+    glm::vec3 time_hsv_l0(hue_l, 1.0f, 0.125f);
+    glm::vec3 time_hsv_l1(hue_l, 1.0f, 1.0f);
+    glm::vec3 time_hsv_r0(hue_r, 1.0f, 0.125f);
+    glm::vec3 time_hsv_r1(hue_r, 1.0f, 1.0f);
+    glm::vec3 time_rgb_l0 = glm::rgbColor(time_hsv_l0);
+    glm::vec3 time_rgb_l1 = glm::rgbColor(time_hsv_l1);
+    glm::vec3 time_rgb_r0 = glm::rgbColor(time_hsv_r0);
+    glm::vec3 time_rgb_r1 = glm::rgbColor(time_hsv_r1);
+    time_color_l0 = glm::vec4(time_rgb_l0, 1.0f);
+    time_color_l1 = glm::vec4(time_rgb_l1, 1.0f);
+    time_color_r0 = glm::vec4(time_rgb_r0, 1.0f);
+    time_color_r1 = glm::vec4(time_rgb_r1, 1.0f);
+    glm::vec3 freq_hsv_l0(hue_l, 1.0f, 0.1f);
+    glm::vec3 freq_hsv_l1(hue_l, 1.0f, 0.6f);
+    glm::vec3 freq_hsv_r0(hue_r, 1.0f, 0.1f);
+    glm::vec3 freq_hsv_r1(hue_r, 1.0f, 0.6f);
+    glm::vec3 freq_rgb_l0 = glm::rgbColor(freq_hsv_l0);
+    glm::vec3 freq_rgb_l1 = glm::rgbColor(freq_hsv_l1);
+    glm::vec3 freq_rgb_r0 = glm::rgbColor(freq_hsv_r0);
+    glm::vec3 freq_rgb_r1 = glm::rgbColor(freq_hsv_r1);
+    freq_color_l0 = glm::vec4(freq_rgb_l0, 1.0f);
+    freq_color_l1 = glm::vec4(freq_rgb_l1, 1.0f);
+    freq_color_r0 = glm::vec4(freq_rgb_r0, 1.0f);
+    freq_color_r1 = glm::vec4(freq_rgb_r1, 1.0f);
 }
 
 void Spectrum::SetFrequency(bool log)

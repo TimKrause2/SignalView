@@ -78,10 +78,14 @@ private:
     int i_draw_back;
     bool log;
     bool log_last;
-    glm::vec4 color_l0;
-    glm::vec4 color_l1;
-    glm::vec4 color_r0;
-    glm::vec4 color_r1;
+    glm::vec4 time_color_l0;
+    glm::vec4 time_color_l1;
+    glm::vec4 time_color_r0;
+    glm::vec4 time_color_r1;
+    glm::vec4 freq_color_l0;
+    glm::vec4 freq_color_l1;
+    glm::vec4 freq_color_r0;
+    glm::vec4 freq_color_r1;
     double fsamplerate;
     std::unique_ptr<float[]> x_cyclic_in_l;
     std::unique_ptr<float[]> x_cyclic_in_r;

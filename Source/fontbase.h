@@ -25,7 +25,7 @@ union Pixel32
 {
   Pixel32()
   : integer(0) { }
-  Pixel32(uint8 bi, uint8 gi, uint8 ri, uint8 ai = 255)
+  Pixel32(uint8 ri, uint8 gi, uint8 bi, uint8 ai = 255)
   {
     b = bi;
     g = gi;
