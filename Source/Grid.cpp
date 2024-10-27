@@ -54,8 +54,74 @@ void Grid::ProgramDestroy(void)
     glDeleteProgram(program);
 }
 
+void Grid::InitializeBorder(void)
+{
+    glGenBuffers(1, &border_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, border_vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2)*4,
+                 NULL, GL_STATIC_DRAW);
+    glm::vec2 *vertices = (glm::vec2*)glMapBufferRange(
+        GL_ARRAY_BUFFER,
+        0, sizeof(glm::vec2)*4,
+        GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+    vertices[0].x = 0.0f;
+    vertices[0].y = 0.0f;
+    vertices[1].x = 1.0f;
+    vertices[1].y = 0.0f;
+    vertices[2].x = 1.0f;
+    vertices[2].y = 1.0f;
+    vertices[3].x = 0.0f;
+    vertices[3].y = 1.0f;
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+
+    glGenVertexArrays(1, &border_vao);
+    glBindVertexArray(border_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, border_vbo);
+    glVertexAttribPointer(VERTEX_LOC, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(VERTEX_LOC);
+    glBindVertexArray(0);
+}
+
+#define N_LINEAR_RANGES 7
+LinearRange linearRanges[7]=
+    {
+        {1001.0f, 0, 100.0f},
+        {2000.0f, 9, 200.0f},
+        {5000.0f, 18, 500.0f},
+        {10000.0f, 27, 1000.0f},
+        {20000.0f, 36, 2000.0f},
+        {50000.0f, 45, 5000.0f},
+        {100000.0f, 54, 10000.0f}
+};
+
 void Grid::InitializeLinear(void)
 {
+    glGenBuffers(1, &linear_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, linear_vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2)*N_LINEAR_TOTAL*2,
+                 NULL, GL_STATIC_DRAW);
+    glm::vec2 *vertices = (glm::vec2*)glMapBufferRange(
+        GL_ARRAY_BUFFER,
+        0, sizeof(glm::vec2)*N_LINEAR_TOTAL*2,
+        GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+    for(int r=0;r<N_LINEAR_RANGES;r++){
+        int offset = linearRanges[r].offset*2;
+        for(int l=1,o=0;l<=9;l++,o+=2){
+            float f = linearRanges[r].freq_per_line * l;
+            vertices[offset+o].x = f;
+            vertices[offset+o].y = 0.0f;
+            vertices[offset+o+1].x = f;
+            vertices[offset+o+1].y = 1.0f;
+        }
+    }
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+
+    glGenVertexArrays(1, &linear_vao);
+    glBindVertexArray(linear_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, linear_vbo);
+    glVertexAttribPointer(VERTEX_LOC, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(VERTEX_LOC);
+    glBindVertexArray(0);
 
 }
 
@@ -70,29 +136,6 @@ void Grid::InitializeLog(void)
         0, sizeof(glm::vec2)*N_LOG_TOTAL*2,
         GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
     int iv=0;
-    // initialize the border lines
-    // top line
-    vertices[iv].x = 0.0f;
-    vertices[iv].y = 1.0f;
-    vertices[iv+1].x = 1.0f;
-    vertices[iv+1].y = 1.0f;
-    // left line
-    vertices[iv+2].x = 0.0f;
-    vertices[iv+2].y = 0.0f;
-    vertices[iv+3].x = 0.0f;
-    vertices[iv+3].y = 1.0f;
-    // right line
-    vertices[iv+4].x = 1.0f;
-    vertices[iv+4].y = 0.0f;
-    vertices[iv+5].x = 1.0f;
-    vertices[iv+5].y = 1.0f;
-    // bottom line
-    vertices[iv+6].x = 0.0f;
-    vertices[iv+6].y = 0.0f;
-    vertices[iv+7].x = 1.0f;
-    vertices[iv+7].y = 0.0f;
-
-    iv+=8;
     // initialize the decade lines
     for(int d=1;d<=4;d++){
         float f = powf(10.0f, (float)d);
@@ -209,7 +252,7 @@ float Grid::x_LogDisplacement(float frequency)
 
 float Grid::x_LinearDisplacement(float frequency)
 {
-    return frequency/(sample_rate/2.0f);
+    return frequency/(view_width*sample_rate/2.0f);
 }
 
 Grid::Grid(int Nfft, float sample_rate):
@@ -223,6 +266,8 @@ Grid::Grid(int Nfft, float sample_rate):
 {
     ProgramLoad();
 
+    InitializeBorder();
+    InitializeLinear();
     InitializeLog();
     InitializedB();
 
@@ -265,6 +310,10 @@ Grid::~Grid(void)
     glDeleteVertexArrays(1, &log_vao);
     glDeleteBuffers(1, &dB_vbo);
     glDeleteVertexArrays(1, &dB_vao);
+    glDeleteBuffers(1, &border_vbo);
+    glDeleteVertexArrays(1, &border_vao);
+    glDeleteBuffers(1, &linear_vbo);
+    glDeleteVertexArrays(1, &linear_vao);
 }
 
 void Grid::SetFrequency(bool log)
@@ -283,12 +332,11 @@ void Grid::SetViewWidth(float view_width)
     Grid::view_width = view_width;
 }
 
-void Grid::DrawLogFrequencyText(float frequency, const char *text,
-                               int view_width, int view_height)
+void Grid::DrawLogFrequencyText(float frequency, const char *text)
 {
     float x = x_LogDisplacement(frequency);
-    double xs = x*view_width + 2.0;
-    double ys = view_height - font_height - 2.0;
+    double xs = floor(x*viewport[2]) + 2.0;
+    double ys = viewport[3] - font_height - 2.0;
     font.Printf(xs, ys, text);
 }
 
@@ -297,15 +345,32 @@ float Grid::y_dBDisplacement(float dB)
     return (dB-dB_bottom)/(dB_top-dB_bottom);
 }
 
-void Grid::Draw_dBText(float dB, int view_height)
+void Grid::DrawBorder(void)
+{
+    glUseProgram(program);
+    float top = 1.0f;
+    float bottom = 0.0f;
+    float left = 0.0f;
+    float right = 1.0f;
+    float near = 1.0f;
+    float far = -1.0f;
+    glm::mat4 mvp = glm::ortho(left, right, bottom, top, near, far);
+    glUniformMatrix4fv(mvp_loc, 1, GL_FALSE, glm::value_ptr(mvp));
+    glBindVertexArray(border_vao);
+    glUniform4fv(color_loc, 1, glm::value_ptr(log_border_color));
+    glLineWidth(3.0f);
+    glDrawArrays(GL_LINE_LOOP, 0, 4);
+}
+
+void Grid::Draw_dBText(float dB)
 {
     float y = y_dBDisplacement(dB);
-    double ys = y*view_height + 2.0;
+    double ys = floor(y*viewport[3]);
     double xs = 2.0;
     dB_font.Printf(xs, ys, "%.0f", dB);
 }
 
-void Grid::Draw_dB(int view_height)
+void Grid::Draw_dB(void)
 {
     float delta_dB = dB_top - dB_bottom;
     if(delta_dB==0.0f)
@@ -333,6 +398,8 @@ void Grid::Draw_dB(int view_height)
     i1 = (int)floorf(-dB_bottom/dB_per_line);
     Nlines = i1 - i0 + 1;
 
+    glUseProgram(program);
+
     float top = dB_top;
     float bottom = dB_bottom;
     float left = 0.0f;
@@ -347,41 +414,80 @@ void Grid::Draw_dB(int view_height)
     glDrawArrays(GL_LINES, (group_offset+i0)*2, Nlines*2);
 
     for(int d=i0;d<=i1;d++)
-        Draw_dBText(-d*dB_per_line, view_height);
+        Draw_dBText(-d*dB_per_line);
 }
+
+void Grid::DrawLogFrequency(void)
+{
+    glUseProgram(program);
+    float top = 1.0f;
+    float bottom = 0.0f;
+    float left = 0.0f;
+    float right = view_width;
+    float near = 1.0f;
+    float far = -1.0f;
+    glm::mat4 mvp = glm::ortho(left, right, bottom, top, near, far);
+    glUniformMatrix4fv(mvp_loc, 1, GL_FALSE, glm::value_ptr(mvp));
+    glBindVertexArray(log_vao);
+    glUniform4fv(color_loc, 1, glm::value_ptr(log_decade_color));
+    glLineWidth(1.0f);
+    glDrawArrays(GL_LINES, 0, N_LOG_DECADE*2);
+    glUniform4fv(color_loc, 1, glm::value_ptr(log_linear_color));
+    glDrawArrays(GL_LINES, N_LOG_DECADE*2, N_LOG_LINEAR*2);
+
+    DrawLogFrequencyText(10.0f, "10");
+    DrawLogFrequencyText(100.0f, "100");
+    DrawLogFrequencyText(1000.0f, "1k");
+    DrawLogFrequencyText(10000.0f, "10k");
+
+}
+
+void Grid::DrawLinearFrequency(void)
+{
+    glUseProgram(program);
+    float frequency = view_width*sample_rate/2.0f;
+    int range;
+    for(range=0;range<N_LINEAR_RANGES;range++){
+        if(frequency <= linearRanges[range].frequency)
+            break;
+    }
+    if(range==N_LINEAR_RANGES)
+        range--;
+    float top = 1.0f;
+    float bottom = 0.0f;
+    float left = 0.0f;
+    float right = frequency;
+    float near = 1.0f;
+    float far = -1.0f;
+    glm::mat4 mvp = glm::ortho(left, right, bottom, top, near, far);
+    glUniformMatrix4fv(mvp_loc, 1, GL_FALSE, glm::value_ptr(mvp));
+    glBindVertexArray(linear_vao);
+    glUniform4fv(color_loc, 1, glm::value_ptr(log_decade_color));
+    glLineWidth(1.0f);
+    glDrawArrays(GL_LINES, linearRanges[range].offset*2, 9*2);
+
+    for(int f=1;f<=9;f++){
+        float line_freq = linearRanges[range].freq_per_line * f;
+        float x = x_LinearDisplacement(line_freq);
+        if(x>=1.0)
+            break;
+        double xs = floor(x*viewport[2]) + 2.0;
+        double ys = viewport[3] - font_height - 2.0;
+        font.Printf(xs, ys, "%.1fk", line_freq/1000.0);
+    }
+}
+
 
 void Grid::Draw(void)
 {
-    GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
 
-    glUseProgram(program);
+    DrawBorder();
+    Draw_dB();
 
-    Draw_dB(viewport[3]);
-
-    glUseProgram(program);
     if(log){
-        float top = 1.0f;
-        float bottom = 0.0f;
-        float left = 0.0f;
-        float right = view_width;
-        float near = 1.0f;
-        float far = -1.0f;
-        glm::mat4 mvp = glm::ortho(left, right, bottom, top, near, far);
-        glUniformMatrix4fv(mvp_loc, 1, GL_FALSE, glm::value_ptr(mvp));
-        glBindVertexArray(log_vao);
-        glUniform4fv(color_loc, 1, glm::value_ptr(log_border_color));
-        glLineWidth(3.0f);
-        glDrawArrays(GL_LINES, 0, N_LOG_BORDER*2);
-        glUniform4fv(color_loc, 1, glm::value_ptr(log_decade_color));
-        glLineWidth(1.0f);
-        glDrawArrays(GL_LINES, N_LOG_BORDER*2, N_LOG_DECADE*2);
-        glUniform4fv(color_loc, 1, glm::value_ptr(log_linear_color));
-        glDrawArrays(GL_LINES, (N_LOG_BORDER+N_LOG_DECADE)*2, N_LOG_LINEAR*2);
-
-        DrawLogFrequencyText(10.0f, "10", viewport[2], viewport[3]);
-        DrawLogFrequencyText(100.0f, "100", viewport[2], viewport[3]);
-        DrawLogFrequencyText(1000.0f, "1k", viewport[2], viewport[3]);
-        DrawLogFrequencyText(10000.0f, "10k", viewport[2], viewport[3]);
+        DrawLogFrequency();
+    }else{
+        DrawLinearFrequency();
     }
 }
