@@ -45,7 +45,7 @@ void Waterfall::InitQuads(void)
         "void main(void)\n"
         "{\n"
         "   vec4 t = texture(s_texture, tex);\n"
-        "   outColor = vec4((color_l.rgb*t.r*t.r + color_r.rgb*t.g*t.g), 1.0);\n"
+        "   outColor = vec4((color_l.rgb*t.r + color_r.rgb*t.g), 1.0);\n"
         "}\n";
 
     program = LoadProgram(vShaderSrc, fShaderSrc);
@@ -295,6 +295,7 @@ unsigned char Waterfall::dB2intensity(float dB_x)
     }else{
         intensity = (dB_x - dB_min)/(dB_max - dB_min);
     }
+    intensity*=intensity;
     unsigned char c = intensity*255.0f;
     return c;
 }
