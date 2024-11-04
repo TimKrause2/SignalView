@@ -68,5 +68,28 @@
         <MODULEPATH id="juce_opengl" path="../../../../JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
+    <VS2022 targetFolder="Builds/VisualStudio2022">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" userNotes="Run this in the developer command prompt before building&#10;&gt;vcpkg new --application&#10;&gt;vcpkg add port fftw3&#10;&gt;vcpkg add port glm&#10;&gt;vcpkg add port freetype&#10;&gt;vcpkg install --triplet=x64-windows-static&#10;"
+                       headerPath="vcpkg_installed\x64-windows-static\include" libraryPath="vcpkg_installed\x64-windows-static\include"
+                       extraLinkerFlags="brotlicommon.lib brotlidec.lib brotlienc.lib bz2.lib fftw3.lib freetype.lib glm.lib libpng16.lib zlib.lib"/>
+        <CONFIGURATION isDebug="0" name="Release" headerPath="vcpkg_installed\x64-windows-static\include"
+                       libraryPath="vcpkg_installed\x64-windows-static\lib" extraLinkerFlags="brotlicommon.lib brotlidec.lib brotlienc.lib bz2.lib fftw3.lib freetype.lib glm.lib libpng16.lib zlib.lib"
+                       userNotes="Run this in the developer command prompt before building&#10;&gt;vcpkg new --application&#10;&gt;vcpkg add port fftw3&#10;&gt;vcpkg add port glm&#10;&gt;vcpkg add port freetype&#10;&gt;vcpkg install --triplet=x64-windows-static&#10;"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../../juce"/>
+        <MODULEPATH id="juce_audio_devices" path="../../juce"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../juce"/>
+        <MODULEPATH id="juce_audio_processors" path="../../juce"/>
+        <MODULEPATH id="juce_core" path="../../juce"/>
+        <MODULEPATH id="juce_data_structures" path="../../juce"/>
+        <MODULEPATH id="juce_events" path="../../juce"/>
+        <MODULEPATH id="juce_graphics" path="../../juce"/>
+        <MODULEPATH id="juce_gui_basics" path="../../juce"/>
+        <MODULEPATH id="juce_gui_extra" path="../../juce"/>
+        <MODULEPATH id="juce_opengl" path="../../juce"/>
+      </MODULEPATHS>
+    </VS2022>
   </EXPORTFORMATS>
 </JUCERPROJECT>

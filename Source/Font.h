@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include <JuceHeader.h>
 #include <glm/glm.hpp>
 #include <ft2build.h>

@@ -8,6 +8,7 @@
   ==============================================================================
 */
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include "Spectrum.h"
 #include <cmath>
 #include <cstring>

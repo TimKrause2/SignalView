@@ -9,6 +9,7 @@
 */
 
 #pragma once
+#define _USE_MATH_DEFINES
 
 #include <JuceHeader.h>
 #include <glm/glm.hpp>
