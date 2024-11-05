@@ -45,7 +45,7 @@ Select Visual Studio 2022 in the Select exporter entry at the top.
 Click on the Visual Studio icon to the right. This will open Visual Studio. Once in Visual Studio select 
 Tools->Command Line->Developer Command Prompt. In the terminal enter the following:
 
-    "..\..\windows_pre_build.bat"
+    ..\..\windows_pre_build.bat
 
 After that completes select Build in Visual Studio. Now the plugin is in either 
 `SignalView\Builds\VisualStudio2022\x64\Debug\VST3` 
