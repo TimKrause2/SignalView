@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Signal View is a stereo signal visual analyser.
+Signal View is a stereo signal visual analyser VST3 plugin.
 It includes a time domain view and frequency domain view in selectable
 linear or log format. There is also a waterfall view to see trends in
 the spectrum.
@@ -30,7 +30,7 @@ The spectral analysis is performed by [fftw3](https://www.fftw.org/).
 
 ## Building for Linux
 
-Open the project file, `SignalView.jucer`, in Projucer. Select File->SaveProject.
+Open the project file, `SignalView.jucer`, in Projucer. Select **File->SaveProject**.
 And then in the terminal in the `SignalView` directory enter the following:
 
     ./build_linux.sh
@@ -41,13 +41,13 @@ VST3 directory.
 ## Building for Windows
 
 Open the project file, `SignalView.jucer`, in Projucer.
-Select Visual Studio 2022 in the Select exporter entry at the top.
+Select Visual Studio 2022 in the **Select exporter** entry at the top.
 Click on the Visual Studio icon to the right. This will open Visual Studio. Once in Visual Studio select 
-Tools->Command Line->Developer Command Prompt. In the terminal enter the following:
+**Tools->Command Line->Developer Command Prompt**. In the terminal enter the following:
 
     ..\..\windows_pre_build.bat
 
-After that completes select Build in Visual Studio. Now the plugin is in either 
+After that completes select **Build** in Visual Studio. Now the plugin is in either 
 `SignalView\Builds\VisualStudio2022\x64\Debug\VST3` 
 or `SignalView\Builds\VisualStudio2022\x64\Release\VST3` 
 depending on the target you selected. That can then be copied
