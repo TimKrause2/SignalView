@@ -15,7 +15,7 @@ The plugin is available for download [here](https://www.twkrause.ca).
 
 ## Implementation
 
-This project uses [Juce](https://juce.com/) and its OpenGL hosting capabilities.
+This project uses [Juce and Projucer](https://juce.com/) and its OpenGL hosting capabilities.
 The spectral analysis is performed by [fftw3](https://www.fftw.org/).
 Static libraries are provided by [vcpkg](https://vcpkg.io/).
 
@@ -23,15 +23,15 @@ Static libraries are provided by [vcpkg](https://vcpkg.io/).
 
 ### Linux
 
-- Juce with Projucer
+- [Juce with Projucer](https://juce.com/)
 - curl
 - make
 - gcc
 
 ### Windows
 
-- Juce with Projucer
-- Visual Studio 2022
+- [Juce with Projucer](https://juce.com/)
+- [Visual Studio 2022](https://visualstudio.microsoft.com/)
 
 ## Building for Linux
 
@@ -54,4 +54,8 @@ Static libraries are provided by [vcpkg](https://vcpkg.io/).
         ..\..\windows_pre_build.bat
    
 7. After that completes select **Build** in Visual Studio.
-8. Now the plugin is in either `SignalView\Builds\VisualStudio2022\x64\Debug\VST3` or `SignalView\Builds\VisualStudio2022\x64\Release\VST3` depending on the target you selected. That can then be copied into `C:\Program Files\Common Files\VST3` to make it accessible to your host.
+8. Now the plugin is in either
+   `SignalView\Builds\VisualStudio2022\x64\Debug\VST3` or
+   `SignalView\Builds\VisualStudio2022\x64\Release\VST3`
+   depending on the target you selected.
+   That can then be copied into `C:\Program Files\Common Files\VST3` to make it accessible to your host.
