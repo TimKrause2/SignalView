@@ -17,16 +17,21 @@ The plugin is available for download [here](https://www.twkrause.ca).
 
 This project uses [Juce](https://juce.com/) and its OpenGL hosting capabilities.
 The spectral analysis is performed by [fftw3](https://www.fftw.org/).
-Static libraries are provided by [vcpgk](https://vcpkg.io/).
+Static libraries are provided by [vcpkg](https://vcpkg.io/).
 
 ## Building prerequisits
 
-| Linux                 | Windows             |
-|-----------------------|---------------------|
-| Juce with Projucer    | Juce with Projucer  |
-| curl                  | Visual Studio 2022  |
-| make                  |                     |
-| gcc                   |                     |
+### Linux
+
+- Juce with Projucer
+- curl
+- make
+- gcc
+
+### Windows
+
+- Juce with Projucer
+- Visual Studio 2022
 
 ## Building for Linux
 
