@@ -13,7 +13,7 @@ The plugin is available for download [here](https://www.twkrause.ca).
 
 ## Implementation
 
-This project uses [Juce](https://juce.com/) and it's OpenGL hosting capabilities.
+This project uses [Juce](https://juce.com/) and its OpenGL hosting capabilities.
 The spectral analysis is performed by [fftw3](https://www.fftw.org/).
 
 ## Building prerequisits for Linux
