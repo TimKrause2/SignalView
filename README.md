@@ -1,5 +1,7 @@
 # SignalView
 
+![SignalView screen shot.](<https://www.twkrause.ca/SignalView screenshot.png> "SignalView screen shot")
+
 ## Introduction
 
 Signal View is a stereo signal visual analyser VST3 plugin.
