@@ -35,26 +35,34 @@ Static libraries are provided by [vcpkg](https://vcpkg.io/).
 
 ## Building for Linux
 
-1. Open the project file, `SignalView.jucer`, in Projucer.
-2. Select **File->SaveProject**.
-3. Then in the terminal in the `SignalView` directory enter the following:
+1. Open the Projucer application.
+2. Select **File->Open** and open `SignalView.jucer` from the `SignalView` directory.
+3. Select **File->Save Project**.
+4. Then in the terminal in the `SignalView` directory enter the following:
 
         ./linux_build.sh
 
-   This will build the VST3 bundle and also copy it into your local VST3 directory.
+   This will:
+   1. install vcpkg
+   2. install the static libraries
+   3. build the VST3 bundle
+   4. and copy it into your local VST3 directory.
 
 ## Building for Windows
 
-1. Open the project file, `SignalView.jucer`, in Projucer.
-2. Select Visual Studio 2022 in the **Select exporter** entry at the top.
-3. Click on the Visual Studio icon to the right. This will open Visual Studio.
-4. Once in Visual Studio select **Tools->Command Line->Developer Command Prompt**.
-5. In the terminal enter the following:
+1. Open the Projucer application.
+2. Select **File->Open** and open `SignalView.jucer` from the `SignalView` directory.
+3. Select Visual Studio 2022 in the **Select exporter** entry at the top.
+4. Click on the Visual Studio icon to the right. This will save the project open Visual Studio.
+5. Once in Visual Studio select **Tools->Command Line->Developer Command Prompt**.
+6. In the terminal enter the following:
    
         ..\..\windows_pre_build.bat
+
+   This will install the static libraries.
    
-7. After that completes select **Build** in Visual Studio.
-8. Now the plugin is in either
+8. After that completes select **Build** in Visual Studio.
+9. Now the plugin is in either
    `SignalView\Builds\VisualStudio2022\x64\Debug\VST3` or
    `SignalView\Builds\VisualStudio2022\x64\Release\VST3`
    depending on the target you selected.
