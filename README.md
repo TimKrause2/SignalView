@@ -61,11 +61,14 @@ Static libraries are provided by [vcpkg](https://vcpkg.io/).
 
    This will install the static libraries.
    
-8. After that completes select **Build** in Visual Studio.
-9. Now the plugin is in either:
+7. After that completes select **Build** in Visual Studio.
+8. Now the plugin is in either:
 
    - `SignalView\Builds\VisualStudio2022\x64\Debug\VST3` or
    - `SignalView\Builds\VisualStudio2022\x64\Release\VST3`
    
    depending on the target you selected.
-   That can then be copied into `C:\Program Files\Common Files\VST3` to make it accessible to your host.
+
+   That can then be copied into
+   `C:\Program Files\Common Files\VST3`
+   to make it accessible to your host.
