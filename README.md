@@ -52,7 +52,7 @@ Static libraries are provided by [vcpkg](https://vcpkg.io/).
 
 1. Open the Projucer application.
 2. Select **File->Open** and open `SignalView.jucer` from the `SignalView` directory.
-3. Select "Visual Studio 2022" in the **Select exporter** entry at the top.
+3. Select "Visual Studio 2022" in the **Selected exporter** entry box at the top.
 4. Click on the Visual Studio icon to the right. This will save the project and open Visual Studio.
 5. Once in Visual Studio select **Tools->Command Line->Developer Command Prompt**.
 6. In the terminal enter the following:
